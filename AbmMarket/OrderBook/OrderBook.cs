@@ -10,8 +10,8 @@ namespace AbmMarket.OrderBook
     {
         public long Id { get; set; }
 
-        private readonly SortedDictionary<decimal, Queue<Order>> _bids = new(Comparer<decimal>.Create((a,b) => b.CompareTo(a)));
-        private readonly SortedDictionary<decimal, Queue<Order>> _asks = new();
+        private readonly SortedDictionary<decimal, SortedSet<Order>> _bids = new(Comparer<decimal>.Create((a,b) => b.CompareTo(a)));
+        private readonly SortedDictionary<decimal, SortedSet<Order>> _asks = new();
 
 
         /// <summary>
@@ -47,18 +47,14 @@ namespace AbmMarket.OrderBook
             }
         }
 
-        private static void MatchOrder(Order incoming, SortedDictionary<decimal, Queue<Order>> oppositeBook, SortedDictionary<decimal, Queue<Order>> sameSideBook, Func<Order, Order, bool> matchCondition)
+        private static void MatchOrder(Order incoming, SortedDictionary<decimal, SortedSet<Order>> oppositeBook, SortedDictionary<decimal, SortedSet<Order>> sameSideBook, Func<Order, Order, bool> matchCondition)
         {
             // While our incoming order still has quantity to match
             // and the opposite book still has orders to match with
-            while (incoming.Quantity > 0 && oppositeBook.Count != 0)
+            while (incoming.Quantity > 0 && TryGetBestOrder(oppositeBook, out var priceLevel, out var bestOrder))
             {
-                var topLevel = oppositeBook.First();
-                var bestOrder = topLevel.Value.Peek();
-
-                if (!matchCondition(incoming, bestOrder))
+                if (bestOrder == null || !matchCondition(incoming, bestOrder))
                 {
-                    // No match possible
                     break;
                 }
 
@@ -69,16 +65,13 @@ namespace AbmMarket.OrderBook
 
                 if (bestOrder.Quantity == 0)
                 {
-                    // best order has been filled, remove from the order book
-                    topLevel.Value.Dequeue();
+                    oppositeBook[priceLevel].Remove(bestOrder);
                 }
 
-                if (topLevel.Value.Count == 0)
+                if (oppositeBook.TryGetValue(priceLevel, out SortedSet<Order>? value) && value.Count == 0)
                 {
-                    // Top level is empty, remove
-                    oppositeBook.Remove(topLevel.Key);
+                    oppositeBook.Remove(priceLevel);
                 }
-
             }
 
             if (incoming.Quantity > 0) 
@@ -87,15 +80,50 @@ namespace AbmMarket.OrderBook
             }
         }
 
-        private static void AddToBook(SortedDictionary<decimal, Queue<Order>> book, Order order)
+        private static void AddToBook(SortedDictionary<decimal, SortedSet<Order>> book, Order order)
         {
-            if (!book.TryGetValue(order.Price, out Queue<Order>? value))
+            if (!book.TryGetValue(order.Price, out SortedSet<Order>? value))
             {
-                value = new Queue<Order>();
+                value = [];
                 book[order.Price] = value;
             }
 
-            value.Enqueue(order);
+            value.Add(order);
         }
+
+        private static bool TryGetBestOrder(
+            SortedDictionary<decimal, SortedSet<Order>> book,
+            out decimal priceLevel,
+            out Order? bestOrder)
+        {
+            bestOrder = null;
+            priceLevel = default;
+
+            while (book.Count > 0)
+            {
+                var topLevel = book.First();
+
+                if (topLevel.Value == null || topLevel.Value.Count == 0)
+                {
+                    // Defensive cleanup of empty price level
+                    book.Remove(topLevel.Key);
+                    continue;
+                }
+
+                var candidate = topLevel.Value.Min;
+                if (candidate == null)
+                {
+                    book.Remove(topLevel.Key);
+                    continue;
+                }
+
+                priceLevel = topLevel.Key;
+                bestOrder = candidate;
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }
