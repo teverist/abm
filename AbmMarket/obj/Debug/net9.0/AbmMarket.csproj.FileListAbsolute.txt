@@ -1,0 +1,14 @@
+C:\Users\tobye\projects\AbmMarket\AbmMarket\bin\Debug\net9.0\AbmMarket.exe
+C:\Users\tobye\projects\AbmMarket\AbmMarket\bin\Debug\net9.0\AbmMarket.deps.json
+C:\Users\tobye\projects\AbmMarket\AbmMarket\bin\Debug\net9.0\AbmMarket.runtimeconfig.json
+C:\Users\tobye\projects\AbmMarket\AbmMarket\bin\Debug\net9.0\AbmMarket.dll
+C:\Users\tobye\projects\AbmMarket\AbmMarket\bin\Debug\net9.0\AbmMarket.pdb
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.AssemblyInfoInputs.cache
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.AssemblyInfo.cs
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.csproj.CoreCompileInputs.cache
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.dll
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\refint\AbmMarket.dll
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.pdb
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\AbmMarket.genruntimeconfig.cache
+C:\Users\tobye\projects\AbmMarket\AbmMarket\obj\Debug\net9.0\ref\AbmMarket.dll
